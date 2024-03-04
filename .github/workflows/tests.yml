@@ -1,27 +1,33 @@
-name: Test
+name: Cypress Tests
 
-on:
-  push:
-    branches:
-      - main
+on: push
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
+  install:
+  # ... omitted install job from above
 
+  cypress-run:
+    runs-on: ubuntu-22.04
+    needs: install
     strategy:
+      # don't fail the entire matrix on failure
+      fail-fast: false
       matrix:
-        node-version: [12, 14, 16]  # Add more versions as needed
-
+        # run copies of the current job in parallel
+        containers: [1, 2, 3, 4, 5]
     steps:
-    - name: Set up Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Install dependencies
-      run: npm install
+      - name: Download the build folder
+        uses: actions/download-artifact@v4
+        with:
+          name: build
 
-    - name: Run tests
-      run: npm test
-
+      - name: Cypress run
+        uses: cypress-io/github-action@v6
+        with:
+          record: true
+          parallel: true
+          group: 'UI-Chrome'
+          start: npm start
