@@ -1,0 +1,4 @@
+  - name: ZAP Scan
+    uses: zaproxy/action-baseline@v0.11.0
+    with:
+      target: 'https://https://juice-shop.herokuapp.com/#
